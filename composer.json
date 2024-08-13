@@ -1,0 +1,27 @@
+{
+    "name": "imranertaza/airwallex",
+    "description": "Airwallex Payment Gateway php library. It will help to implement airwallex payment gateway to any php based application easily.",
+    "keywords": ["Airwallex", "payment", "payment gateway", "php", "library", "oop", "subscription", "online payment", "save card payment", "php 8", "accept payment"],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Imranertaza\\Airwallex\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Syed Imran Ertaza",
+            "email": "imranertaza12@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "version": "1.0.0",
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
