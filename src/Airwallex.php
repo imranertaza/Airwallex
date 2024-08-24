@@ -11,24 +11,40 @@ class Airwallex
     private int $customer_phone;
     private string $customer_name;
     private string $customer_email;
-    private array $productItems;
+    private array  $productItems;
+    private string $AW_URL;
+    private string $AW_LOGIN;
+    private string $AW_CLIENTID;
+    private string $AW_API;
 
     /**
-     * This method generates access token of airwallex payment gateway
-     *
+     * @description This is use set airwallex config data
+     * @param array $argument
+     * @return $this
+     */
+    public function config(array $argument) : Airwallex
+    {
+        $this->AW_URL = $argument["aw_url"];
+        $this->AW_LOGIN = $argument["aw_login"];
+        $this->AW_CLIENTID = $argument["aw_client_id"];
+        $this->AW_API = $argument["aw_api"];
+
+        return $this;
+    }
+    
+    /**
+     * @description This method generates access token of airwallex payment gateway
      * @return string
      * @throws Exception
      */
     private function getAccessToken(): string
     {
-//        unset($_SESSION['expiry']);
-//        var_dump($salt = "pm" . $this->generateRandomSalt());
         if (!isset($_SESSION['expiry']) || strtotime($_SESSION['expiry']) < time()) {
             $curl = curl_init();
             curl_setopt_array(
                 $curl,
                 array(
-                    CURLOPT_URL => AW_DEMO_URL . AW_LOGIN,
+                    CURLOPT_URL => $this->AW_URL . $this-> AW_LOGIN,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -38,17 +54,17 @@ class Airwallex
                     CURLOPT_CUSTOMREQUEST => 'POST',
                     CURLOPT_HTTPHEADER => array(
                         'Content-Length: 0',
-                        'x-client-id:' . AW_CLIENTID . '',
-                        'x-api-key:' . AW_API . ''
+                        'x-client-id:' . $this-> AW_CLIENTID . '',
+                        'x-api-key:' . $this-> AW_API . ''
                     ),
                 )
             );
             $response = curl_exec($curl);
-//                curl_close($curl);
             $res = json_decode($response);
             if (!isset($res->token)){
                 throw new Exception('Unauthorized credentials');
             }
+
             // Set the new access token and its expiry date
             $_SESSION['expiry'] = $res->expires_at;
             $_SESSION['acc_tok'] = $res->token;
@@ -61,8 +77,7 @@ class Airwallex
 
 
     /**
-     * This method generates salt for the airwallex payment gateway
-     *
+     *@description This method generates salt for the airwallex payment gateway
      * @param int $length
      * @return string
      */
@@ -83,73 +98,73 @@ class Airwallex
      * @return stdClass It returns the json object
      * @throws Exception
      */
-    public function createPayment($data): stdClass
-    {
+    // public function createPayment($data): stdClass
+    // {
 
-        $result = $this->getAccessToken();
-        $salt = "pm" . $this->generateRandomSalt();
+    //     $result = $this->getAccessToken();
+    //     $salt = "pm" . $this->generateRandomSalt();
 
-        $curl = curl_init();
+    //     $curl = curl_init();
 
-        curl_setopt_array(
-            $curl,
-            array(
-                CURLOPT_URL => AW_DEMO_URL . AW_CREATE_PAYMENT,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => '{
-                                        "beneficiary": {
-                                            "address": {
-                                                "city": "Stehrfort",
-                                                "country_code": "CN",
-                                                "postcode": "25000",
-                                                "state": "Delphiaside",
-                                                "street_address": "45280 DuBuque Valleys"
-                                            },
-                                            "bank_details": {
-                                                "account_currency": "CNY",
-                                                "account_name": "' . $data['cardholder'] . '",
-                                                "account_number": "' . $data['cardnumber'] . '",
-                                                "bank_country_code": "CN",
-                                                "bank_name": "Bode, Aufderhar and Dickens",
-                                                "swift_code": "ABOCCNBJ"
-                                            },
-                                            "company_name": "Schoen - Thompson",
-                                            "entity_type": "COMPANY"
-                                        },
-                                        "payment_amount": null,
-                                        "payment_currency": "CNY",
-                                        "payment_method": "SWIFT",
-                                        "reason": "professional_business_services",
-                                        "reference": "Test 7f015a05-405e-41de-88f5-58de3f5d948f",
-                                        "request_id": "' . $salt . '",
-                                        "source_amount": "' . $data['total_amount'] . '",
-                                        "source_currency": "USD",
-                                        "swift_charge_option": "SHARED"
-                                    }',
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json',
-                    'Authorization: Bearer ' . $result . ''
-                ),
-            )
-        );
+    //     curl_setopt_array(
+    //         $curl,
+    //         array(
+    //             CURLOPT_URL => $this->AW_URL . AW_CREATE_PAYMENT,
+    //             CURLOPT_RETURNTRANSFER => true,
+    //             CURLOPT_ENCODING => '',
+    //             CURLOPT_MAXREDIRS => 10,
+    //             CURLOPT_TIMEOUT => 0,
+    //             CURLOPT_FOLLOWLOCATION => true,
+    //             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //             CURLOPT_CUSTOMREQUEST => 'POST',
+    //             CURLOPT_POSTFIELDS => '{
+    //                                     "beneficiary": {
+    //                                         "address": {
+    //                                             "city": "Stehrfort",
+    //                                             "country_code": "CN",
+    //                                             "postcode": "25000",
+    //                                             "state": "Delphiaside",
+    //                                             "street_address": "45280 DuBuque Valleys"
+    //                                         },
+    //                                         "bank_details": {
+    //                                             "account_currency": "CNY",
+    //                                             "account_name": "' . $data['cardholder'] . '",
+    //                                             "account_number": "' . $data['cardnumber'] . '",
+    //                                             "bank_country_code": "CN",
+    //                                             "bank_name": "Bode, Aufderhar and Dickens",
+    //                                             "swift_code": "ABOCCNBJ"
+    //                                         },
+    //                                         "company_name": "Schoen - Thompson",
+    //                                         "entity_type": "COMPANY"
+    //                                     },
+    //                                     "payment_amount": null,
+    //                                     "payment_currency": "CNY",
+    //                                     "payment_method": "SWIFT",
+    //                                     "reason": "professional_business_services",
+    //                                     "reference": "Test 7f015a05-405e-41de-88f5-58de3f5d948f",
+    //                                     "request_id": "' . $salt . '",
+    //                                     "source_amount": "' . $data['total_amount'] . '",
+    //                                     "source_currency": "USD",
+    //                                     "swift_charge_option": "SHARED"
+    //                                 }',
+    //             CURLOPT_HTTPHEADER => array(
+    //                 'Content-Type: application/json',
+    //                 'Authorization: Bearer ' . $result . ''
+    //             ),
+    //         )
+    //     );
 
-        $response = curl_exec($curl);
+    //     $response = curl_exec($curl);
 
-        curl_close($curl);
+    //     curl_close($curl);
 
-        return json_decode($response);
+    //     return json_decode($response);
 
-    }
+    // }
 
 
     /**
-     * This method creates a payment intent
+     * @description This method creates a payment intent
      *
      * @param float|null $amount
      * @param string $airwallexCustomerID
@@ -168,15 +183,9 @@ class Airwallex
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
 
-        // Prepare product items
-
-//        $productItems = $this->generatePackageArray();
-//        if (empty ($this->productItems))
-//            return null;
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . AW_CREATE_PINTENT,
+            CURLOPT_URL => $this->AW_URL . AW_CREATE_PINTENT,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -193,23 +202,6 @@ class Airwallex
                 'metadata' => [
                     'my_test_metadata_id' => 'my_test_metadata_id_' . uniqid()
                 ],
-//                'order' => [
-//                    'products' => $this->productItems,
-//                    'shipping' => [
-//                        'address' => [
-//                            'city' => 'South Nicoletteland',
-//                            'country_code' => 'CN',
-//                            'postcode' => '25000',
-//                            'state' => 'Maritzaview',
-//                            'street' => '2773 Simonis Hills'
-//                        ],
-//                        'first_name' => 'Orin',
-//                        'last_name' => 'Schowalter',
-//                        'phone_number' => '678-966-3529',
-//                        'shipping_method' => '顺丰快递'
-//                    ],
-//                    'type' => 'Online Mobile Phone Purchases'
-//                ],
                 'payment_method_options' => [
                     'card' => [
                         'risk_control' => [
@@ -232,8 +224,8 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return array(
             "intent_id" => !empty($res->id) ? $res->id : null,
@@ -275,8 +267,7 @@ class Airwallex
 
 
     /**
-     * This method generates a product array list
-     *
+     *@description This method generates a product array list
      * @return array
      */
     public function generateProductsArray(): array
@@ -306,8 +297,7 @@ class Airwallex
 
 
     /**
-     * This method sets the customer data before creating a customer.
-     *
+     * @description This method sets the customer data before creating a customer.
      * @param int $customerID
      * @return $this
      */
@@ -328,18 +318,17 @@ class Airwallex
     public function createCustomer(): string
     {
         $curl = curl_init();
+
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
+
         // Get access token
         $accessToken = $this->getAccessToken();
-//        $phone_number = $_POST['customer_data']['phone'];
-//        $customer_name =  urldecode($_POST['customer_data']["name"]);
-//        $customer_email = $_POST['customer_data']["email"];
 
         curl_setopt_array(
             $curl,
             array(
-                CURLOPT_URL => AW_DEMO_URL . AW_CREATE_CUSTOMER,
+                CURLOPT_URL => $this->AW_URL . AW_CREATE_CUSTOMER,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -363,7 +352,6 @@ class Airwallex
         );
 
         $response = curl_exec($curl);
-
         curl_close($curl);
 
         return json_decode($response)->id;
@@ -388,7 +376,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . 'pa/payment_intents/' . $intentID . '/cancel',
+            CURLOPT_URL => $this->AW_URL . 'pa/payment_intents/' . $intentID . '/cancel',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -532,9 +520,11 @@ class Airwallex
     }
 
     /**
-     * @return string
+     * @description this is using create consent
+     * @return stdClass
+     * @throws Exception
      */
-    public function createPaymentConsent(): string
+    public function createPaymentConsent(): stdClass
     {
         $curl = curl_init();
 
@@ -547,7 +537,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . 'pa/payment_consents/create',
+            CURLOPT_URL => $this->AW_URL . 'pa/payment_consents/create',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -574,8 +564,13 @@ class Airwallex
         return json_decode($response);
     }
 
-    ///api/v1/pa/customers
-    public function client_secret($customerID)
+    /**
+     * @description This is used to get client secret
+     * @param $customerID
+     * @return string
+     * @throws Exception
+     */
+    public function client_secret($customerID) : string
     {
 
         $curl = curl_init();
@@ -583,12 +578,9 @@ class Airwallex
         // Get access token
         $accessToken = $this->getAccessToken();
 
-        // Generate random salt
-
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . 'pa/customers/' . $customerID . '/generate_client_secret',
+            CURLOPT_URL => $this->AW_URL . 'pa/customers/' . $customerID . '/generate_client_secret',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -611,7 +603,12 @@ class Airwallex
         return json_decode($response)->client_secret;
     }
 
-    public function get_payment_consents($consents)
+    /**
+     * @description This is used to get individual consents
+     * @param string $consents
+     * @return stdClass|string
+     */
+    public function get_payment_consents(string $consents) : stdClass | string
     {
         try {
             $curl = curl_init();
@@ -621,7 +618,7 @@ class Airwallex
 
             // Set cURL options
             curl_setopt_array($curl, [
-                CURLOPT_URL => AW_DEMO_URL . 'pa/payment_consents/' . $consents,
+                CURLOPT_URL => $this->AW_URL . 'pa/payment_consents/' . $consents,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -642,8 +639,11 @@ class Airwallex
             curl_close($curl);
 
             return json_decode($response);
+
         }catch (Exception $e){
+
             return $e->getMessage();
+
         }
     }
 
@@ -657,14 +657,14 @@ class Airwallex
         $curl = curl_init();
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
+
         // Get access token
         $accessToken = $this->getAccessToken();
 
         curl_setopt_array(
             $curl,
             array(
-//                CURLOPT_URL => AW_DEMO_URL . '/pa/payment_methods/create',
-                CURLOPT_URL => 'https://api-demo.airwallex.com/api/v1/pa/payment_methods/create',
+                CURLOPT_URL => $this->AW_URL.'pa/payment_methods/create',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -717,20 +717,25 @@ class Airwallex
 
     }
 
-
-    public function createAccount()
+    /**
+     * @description This is using for airwallex create account
+     * @return stdClass
+     * @throws Exception
+     */
+    public function createAccount() : stdClass
     {
         $curl = curl_init();
+
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
+
         // Get access token
         $accessToken = $this->getAccessToken();
 
         curl_setopt_array(
             $curl,
             array(
-//                CURLOPT_URL => AW_DEMO_URL . '/pa/payment_methods/create',
-                CURLOPT_URL => 'https://api-demo.airwallex.com/api/v1/pa/payment_methods/create',
+                CURLOPT_URL => $this->AW_URL.'pa/payment_methods/create',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -739,19 +744,19 @@ class Airwallex
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => '  "account_details": {
-        "business_details": {
-      	    "business_name":"your_business_name"
-      	}
-      },
-      "customer_agreements": {
-        "agreed_to_data_usage": true,
-        "agreed_to_terms_and_conditions": true
-      },
-      "primary_contact": {
-        "email": "your_account_name@company.com"
-      }
-    }',
-                CURLOPT_HTTPHEADER => array(
+            "business_details": {
+                "business_name":"your_business_name"
+            }
+        },
+        "customer_agreements": {
+            "agreed_to_data_usage": true,
+            "agreed_to_terms_and_conditions": true
+        },
+        "primary_contact": {
+            "email": "your_account_name@company.com"
+        }
+        }',
+                    CURLOPT_HTTPHEADER => array(
                     'Content-Type: application/json',
                     'Authorization: Bearer ' . $accessToken
                 ),
@@ -766,8 +771,14 @@ class Airwallex
 
     }
 
-
-    public function createPaymentIntentForSaveCard(string $airwallexCustomerID,string $price)
+    /**
+     * @description This is using for create payment intent for save card
+     * @param string $airwallexCustomerID
+     * @param string $price
+     * @return mixed
+     * @throws Exception
+     */
+    public function createPaymentIntentForSaveCard(string $airwallexCustomerID, string $price) : stdClass
     {
 
         // Initialize cURL
@@ -779,10 +790,9 @@ class Airwallex
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
 
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . AW_CREATE_PINTENT,
+            CURLOPT_URL => $this->AW_URL . AW_CREATE_PINTENT,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -829,25 +839,35 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
 
-    public function confirmPaymentIntent($id,$cid,$cvc,$customer_id)
+    /**
+     * @description This use for confirm payment intent
+     * @param $id
+     * @param $cid
+     * @param $cvc
+     * @param $customer_id
+     * @return mixed
+     * @throws Exception
+     */
+    public function confirmPaymentIntent(string $id, string $cid, string $cvc, string $customer_id) : stdClass
     {
         $curl = curl_init();
+
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
+
         // Get access token
         $accessToken = $this->getAccessToken();
 
         curl_setopt_array(
             $curl,
             array(
-//                CURLOPT_URL => AW_DEMO_URL . '/pa/payment_methods/create',
-                CURLOPT_URL => 'https://api-demo.airwallex.com/api/v1/pa/payment_intents/' . $id . '/confirm',
+                CURLOPT_URL => $this->AW_URL.'pa/payment_intents/' . $id . '/confirm',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -870,14 +890,18 @@ class Airwallex
             ));
 
         $response = curl_exec($curl);
-
         curl_close($curl);
 
         return json_decode($response);
-
     }
 
-    public function createConsents($amount)
+    /**
+     * @description This is use for create consents
+     * @param int $amount
+     * @return mixed
+     * @throws Exception
+     */
+    public function createConsents(int $amount) : stdClass
     {
         // Initialize cURL
         $curl = curl_init();
@@ -891,7 +915,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api-demo.airwallex.com/api/v1/pa/payment_consents/create",
+            CURLOPT_URL => $this->AW_URL.'pa/payment_consents/create',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -923,7 +947,13 @@ class Airwallex
         return $res;
     }
 
-    public function payment_consents_verify()
+    /**
+     * @description This is for payment consents verify
+     * @param string $id
+     * @return mixed
+     * @throws Exception
+     */
+    public function payment_consents_verify(string $id) : stdClass
     {
         // Initialize cURL
         $curl = curl_init();
@@ -937,7 +967,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api-demo.airwallex.com/api/v1/pa/payment_consents/cst_hkdmgx87jgxs22j3bx7/verify",
+            CURLOPT_URL => $this->AW_URL.'pa/payment_consents/'.$id.'/verify',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -959,8 +989,8 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
@@ -985,7 +1015,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . "subscriptions/create",
+            CURLOPT_URL => $this->AW_URL . "subscriptions/create",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1016,12 +1046,19 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
 
+    /**
+     * @description this is using for create product
+     * @param string $pro_name
+     * @param string $unit
+     * @return stdClass
+     * @throws Exception
+     */
     public function create_Product(string $pro_name, string $unit) : stdClass
     {
 
@@ -1037,7 +1074,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . "products/create",
+            CURLOPT_URL => $this->AW_URL . "products/create",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1062,12 +1099,21 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
 
+    /**
+     * @description This is using for create price
+     * @param string $product_id
+     * @param float $unit_amount
+     * @param int $period
+     * @param string $period_unit
+     * @return stdClass
+     * @throws Exception
+     */
     public function create_Price(string $product_id, float $unit_amount, int $period, string $period_unit) : stdClass
     {
 
@@ -1083,7 +1129,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . "prices/create",
+            CURLOPT_URL => $this->AW_URL . "prices/create",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1113,13 +1159,19 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
 
-    public function get_subscriptions($id)
+    /**
+     * @description This is using for gat subscription data to base on subscription id
+     * @param string $id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function get_subscriptions(string $id) : stdClass
     {
 
         $curl = curl_init();
@@ -1127,12 +1179,9 @@ class Airwallex
         // Get access token
         $accessToken = $this->getAccessToken();
 
-        // Generate random salt
-
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/subscriptions/'.$id,
+            CURLOPT_URL => $this->AW_URL . '/subscriptions/'.$id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1155,7 +1204,14 @@ class Airwallex
         return json_decode($response);
     }
 
-    public function get_price($price_id){
+    /**
+     * @description This is using for get price to base on get price id
+     * @param string $price_id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function get_price(string $price_id) : stdClass
+    {
         $curl = curl_init();
 
         // Get access token
@@ -1166,7 +1222,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/prices/'.$price_id,
+            CURLOPT_URL => $this->AW_URL . '/prices/'.$price_id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1185,13 +1241,19 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
-//        echo ($response);
+
         return $res;
     }
 
-    public function cancel_subscription($id){
+    /**
+     * @description This is using for cancel subscription to base on subscription id
+     * @param string $id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function cancel_subscription(string $id) : stdClass 
+    {
         $curl = curl_init();
 
         // Get access token
@@ -1202,7 +1264,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/subscriptions/'.$id.'/cancel',
+            CURLOPT_URL => $this->AW_URL . '/subscriptions/'.$id.'/cancel',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1227,22 +1289,26 @@ class Airwallex
         curl_close($curl);
 
         $res = json_decode($response);
-//        echo ($response);
+
         return $res;
     }
 
-    public function get_invoices($id){
+    /**
+     * @description This is using for get invoice to base on invoice id
+     * @param string $id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function get_invoices(string $id) : stdClass
+    {
         $curl = curl_init();
 
         // Get access token
         $accessToken = $this->getAccessToken();
 
-        // Generate random salt
-
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/invoices/'.$id,
+            CURLOPT_URL => $this->AW_URL . '/invoices/'.$id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1266,18 +1332,22 @@ class Airwallex
     }
 
 
-    public function get_intent($id){
+    /**
+     * @description This using for get intent to base on id
+     * @param string $id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function get_intent(string $id) : stdClass 
+    {
         $curl = curl_init();
 
         // Get access token
         $accessToken = $this->getAccessToken();
 
-        // Generate random salt
-
-
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/payment_intents/'.$id,
+            CURLOPT_URL => $this->AW_URL . '/payment_intents/'.$id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1300,7 +1370,14 @@ class Airwallex
         return json_decode($response);
     }
 
-    public function subscriptions_update($id)
+    /**
+     * @description This is using for subscriptions update to base on subscription id
+     * @param string $id
+     * @param string $cst_id
+     * @return stdClass
+     * @throws Exception
+     */
+    public function subscriptions_update(string $id, string $cst_id) : stdClass
     {
         $curl = curl_init();
 
@@ -1312,7 +1389,7 @@ class Airwallex
 
         // Set cURL options
         curl_setopt_array($curl, [
-            CURLOPT_URL => AW_DEMO_URL . '/subscriptions/'.$id.'/update',
+            CURLOPT_URL => $this->AW_URL . '/subscriptions/'.$id.'/update',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1322,7 +1399,7 @@ class Airwallex
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode([
                 'request_id' => $salt,
-                'payment_consent_id' => 'cst_hkdmz4ng5gyjlfsy81p'
+                'payment_consent_id' => $cst_id,//'cst_hkdmz4ng5gyjlfsy81p'
             ]),
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
@@ -1335,9 +1412,8 @@ class Airwallex
 
         // Close cURL session
         curl_close($curl);
-
         $res = json_decode($response);
-//        echo ($response);
+
         return $res;
     }
 
