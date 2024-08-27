@@ -44,7 +44,7 @@ class Airwallex
             curl_setopt_array(
                 $curl,
                 array(
-                    CURLOPT_URL => $this->AW_URL . $this-> AW_LOGIN,
+                    CURLOPT_URL => $this->AW_URL . $this->AW_LOGIN,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -54,8 +54,8 @@ class Airwallex
                     CURLOPT_CUSTOMREQUEST => 'POST',
                     CURLOPT_HTTPHEADER => array(
                         'Content-Length: 0',
-                        'x-client-id:' . $this-> AW_CLIENTID . '',
-                        'x-api-key:' . $this-> AW_API . ''
+                        'x-client-id:' . $this->AW_CLIENTID . '',
+                        'x-api-key:' . $this->AW_API . ''
                     ),
                 )
             );
@@ -566,11 +566,11 @@ class Airwallex
 
     /**
      * @description This is used to get client secret
-     * @param $customerID
-     * @return string
+     * @param string $customerID
+     * @return string|null
      * @throws Exception
      */
-    public function client_secret($customerID) : string
+    public function client_secret(string $customerID) : string | null
     {
 
         $curl = curl_init();
@@ -600,7 +600,7 @@ class Airwallex
         // Close cURL session
         curl_close($curl);
 
-        return json_decode($response)->client_secret;
+        return json_decode($response)->client_secret ?? null;
     }
 
     /**
