@@ -72,12 +72,11 @@ class Airwallex
 
         // Return the access token
         return $_SESSION['acc_tok'];
-
     }
 
 
     /**
-     *@description This method generates salt for the airwallex payment gateway
+     * @description This method generates salt for the airwallex payment gateway
      * @param int $length
      * @return string
      */
@@ -91,159 +90,14 @@ class Airwallex
         }
     }
 
-
     /**
-     * This method is to create a payment.
-     * @param $data
-     * @return stdClass It returns the json object
-     * @throws Exception
-     */
-    // public function createPayment($data): stdClass
-    // {
-
-    //     $result = $this->getAccessToken();
-    //     $salt = "pm" . $this->generateRandomSalt();
-
-    //     $curl = curl_init();
-
-    //     curl_setopt_array(
-    //         $curl,
-    //         array(
-    //             CURLOPT_URL => $this->AW_URL . AW_CREATE_PAYMENT,
-    //             CURLOPT_RETURNTRANSFER => true,
-    //             CURLOPT_ENCODING => '',
-    //             CURLOPT_MAXREDIRS => 10,
-    //             CURLOPT_TIMEOUT => 0,
-    //             CURLOPT_FOLLOWLOCATION => true,
-    //             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    //             CURLOPT_CUSTOMREQUEST => 'POST',
-    //             CURLOPT_POSTFIELDS => '{
-    //                                     "beneficiary": {
-    //                                         "address": {
-    //                                             "city": "Stehrfort",
-    //                                             "country_code": "CN",
-    //                                             "postcode": "25000",
-    //                                             "state": "Delphiaside",
-    //                                             "street_address": "45280 DuBuque Valleys"
-    //                                         },
-    //                                         "bank_details": {
-    //                                             "account_currency": "CNY",
-    //                                             "account_name": "' . $data['cardholder'] . '",
-    //                                             "account_number": "' . $data['cardnumber'] . '",
-    //                                             "bank_country_code": "CN",
-    //                                             "bank_name": "Bode, Aufderhar and Dickens",
-    //                                             "swift_code": "ABOCCNBJ"
-    //                                         },
-    //                                         "company_name": "Schoen - Thompson",
-    //                                         "entity_type": "COMPANY"
-    //                                     },
-    //                                     "payment_amount": null,
-    //                                     "payment_currency": "CNY",
-    //                                     "payment_method": "SWIFT",
-    //                                     "reason": "professional_business_services",
-    //                                     "reference": "Test 7f015a05-405e-41de-88f5-58de3f5d948f",
-    //                                     "request_id": "' . $salt . '",
-    //                                     "source_amount": "' . $data['total_amount'] . '",
-    //                                     "source_currency": "USD",
-    //                                     "swift_charge_option": "SHARED"
-    //                                 }',
-    //             CURLOPT_HTTPHEADER => array(
-    //                 'Content-Type: application/json',
-    //                 'Authorization: Bearer ' . $result . ''
-    //             ),
-    //         )
-    //     );
-
-    //     $response = curl_exec($curl);
-
-    //     curl_close($curl);
-
-    //     return json_decode($response);
-
-    // }
-
-
-    /**
-     * @description This method creates a payment intent
-     *
-     * @param float|null $amount
-     * @param string $airwallexCustomerID
-     * @return array
-     * @throws Exception
-     */
-    public function createPaymentIntent(?float $amount, string $airwallexCustomerID): array
-    {
-
-        // Initialize cURL
-        $curl = curl_init();
-
-        // Get access token
-        $accessToken = $this->getAccessToken();
-
-        // Generate random salt
-        $salt = "pm" . $this->generateRandomSalt();
-
-        // Set cURL options
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $this->AW_URL . AW_CREATE_PINTENT,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode([
-                'request_id' => $salt,
-                'amount' => $amount,
-                'currency' => 'USD',
-                'customer_id' => $airwallexCustomerID,
-                'merchant_order_id' => 'Merchant_Order_' . uniqid(),
-                'metadata' => [
-                    'my_test_metadata_id' => 'my_test_metadata_id_' . uniqid()
-                ],
-                'payment_method_options' => [
-                    'card' => [
-                        'risk_control' => [
-                            'skip_risk_processing' => false,
-                            'three_domain_secure_action' => 'FORCE_3DS',
-                            'three_ds_action' => 'FORCE_3DS'
-                        ]
-                    ]
-                ],
-                'return_url' => 'https://abigale.name'
-            ]),
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $accessToken
-            ],
-        ]);
-
-        // Execute cURL request
-        $response = curl_exec($curl);
-
-        // Close cURL session
-        curl_close($curl);
-        $res = json_decode($response);
-
-        // Output response
-        return array(
-            "intent_id" => !empty($res->id) ? $res->id : null,
-            "client_id" => !empty($res->client_secret) ? $res->client_secret : null
-        );
-    }
-
-
-    /**
-     * This method returns a package details as an array
-     *
+     * @description This method returns a package details as an array
      * @param array $packageData
      * @return $this
      */
     public function generatePackageArray(array $packageData): Airwallex
     {
         $package_item = [];
-
 
         if (!empty ($packageData)) {
 
@@ -312,7 +166,7 @@ class Airwallex
 
 
     /**
-     * This method is to create a new customer into the airwallex payment gateway
+     * @description This method is to create a new customer into the airwallex payment gateway
      * @return string
      */
     public function createCustomer(): string
@@ -355,7 +209,6 @@ class Airwallex
         curl_close($curl);
 
         return json_decode($response)->id;
-
     }
 
 
@@ -372,7 +225,6 @@ class Airwallex
 
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
-
 
         // Set cURL options
         curl_setopt_array($curl, [
@@ -456,7 +308,7 @@ class Airwallex
         $accessToken = $this->getAccessToken();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://api.airwallex.com/v1/payments',
+            CURLOPT_URL => $this->AW_URL.'payments',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode([
@@ -483,7 +335,6 @@ class Airwallex
             throw new Exception("Failed to create payment");
         }
     }
-
 
     /**
      * @description This method retrieves card details using token
@@ -533,7 +384,6 @@ class Airwallex
 
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
-
 
         // Set cURL options
         curl_setopt_array($curl, [
@@ -648,13 +498,14 @@ class Airwallex
     }
 
     /**
-     * This method is to create a new customer into the airwallex payment gateway
+     * @description This method is to create a new customer into the airwallex payment gateway
      * @return string
      */
     public function createPaymentMethod(string $airwallexCustomerID): stdClass
     {
 
         $curl = curl_init();
+
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
 
@@ -744,18 +595,18 @@ class Airwallex
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => '  "account_details": {
-            "business_details": {
-                "business_name":"your_business_name"
-            }
-        },
-        "customer_agreements": {
-            "agreed_to_data_usage": true,
-            "agreed_to_terms_and_conditions": true
-        },
-        "primary_contact": {
-            "email": "your_account_name@company.com"
-        }
-        }',
+                                                "business_details": {
+                                                    "business_name":"your_business_name"
+                                                }
+                                            },
+                                            "customer_agreements": {
+                                                "agreed_to_data_usage": true,
+                                                "agreed_to_terms_and_conditions": true
+                                            },
+                                            "primary_contact": {
+                                                "email": "your_account_name@company.com"
+                                            }
+                                        }',
                     CURLOPT_HTTPHEADER => array(
                     'Content-Type: application/json',
                     'Authorization: Bearer ' . $accessToken
@@ -778,7 +629,7 @@ class Airwallex
      * @return mixed
      * @throws Exception
      */
-    public function createPaymentIntentForSaveCard(string $airwallexCustomerID, string $price) : stdClass
+    public function createPaymentIntent(string $airwallexCustomerID, string $price) : stdClass
     {
 
         // Initialize cURL
@@ -912,7 +763,6 @@ class Airwallex
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
 
-
         // Set cURL options
         curl_setopt_array($curl, [
             CURLOPT_URL => $this->AW_URL.'pa/payment_consents/create',
@@ -943,6 +793,7 @@ class Airwallex
         curl_close($curl);
 
         $res = json_decode($response);
+
         // Output response
         return $res;
     }
@@ -963,7 +814,6 @@ class Airwallex
 
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
-
 
         // Set cURL options
         curl_setopt_array($curl, [
@@ -1011,7 +861,6 @@ class Airwallex
 
         // Generate random salt
         $salt = "pm" . $this->generateRandomSalt();
-
 
         // Set cURL options
         curl_setopt_array($curl, [
@@ -1399,7 +1248,7 @@ class Airwallex
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode([
                 'request_id' => $salt,
-                'payment_consent_id' => $cst_id,//'cst_hkdmz4ng5gyjlfsy81p'
+                'payment_consent_id' => $cst_id,
             ]),
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
