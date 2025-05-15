@@ -13,6 +13,22 @@ This is a simple open-source Airwallex payment gateway PHP library that provides
 - **Get Payment Consent:** Remove records from the database.
 
 
+## All the available methods
+getAccessToken()
+generateRandomSalt()
+createPaymentIntent()
+createCustomer()
+getPaymentConsents()
+createPaymentMethod()
+createPaymentIntentForSaveCard()
+confirmPaymentIntent()
+createPaymentConsent()
+verifyPaymentConsents()
+getPaymentIntent()
+getPaymentMethodIdFromConsent()
+
+
+
 ## Example
 
     $crud = new Crud("TableName");
@@ -25,6 +41,10 @@ This is a simple open-source Airwallex payment gateway PHP library that provides
         ->groupEnd()
         ->groupEnd()
         ->where('d', "=",'d')->get();
+
+
+
+
 
 
 
