@@ -308,37 +308,40 @@ class Airwallex
     }
 
 
+    /**
+     * This method is to get client secret
+     * @param string $customerID
+     * @return string|null
+     */
+    public function getClientSecret(string $customerID): string | null
+    {
 
-//    ///api/v1/pa/customers
-//    public function client_secret(string $customerID): string | null
-//    {
-//
-//        $curl = curl_init();
-//
-//        // Set cURL options
-//        curl_setopt_array($curl, [
-//            CURLOPT_URL => $this->aw_url . 'pa/customers/' . $customerID . '/generate_client_secret',
-//            CURLOPT_RETURNTRANSFER => true,
-//            CURLOPT_ENCODING => '',
-//            CURLOPT_MAXREDIRS => 10,
-//            CURLOPT_TIMEOUT => 0,
-//            CURLOPT_FOLLOWLOCATION => true,
-//            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-//            CURLOPT_CUSTOMREQUEST => 'GET',
-//            CURLOPT_HTTPHEADER => [
-//                'Content-Type: application/json',
-//                'Authorization: Bearer ' . $this->get_access_token,
-//            ],
-//        ]);
-//
-//        // Execute cURL request
-//        $response = curl_exec($curl);
-//
-//        // Close cURL session
-//        curl_close($curl);
-//
-//        return json_decode($response)->client_secret ?? null;
-//    }
+        $curl = curl_init();
+
+        // Set cURL options
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->aw_url . 'pa/customers/' . $customerID . '/generate_client_secret',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->get_access_token,
+            ],
+        ]);
+
+        // Execute cURL request
+        $response = curl_exec($curl);
+
+        // Close cURL session
+        curl_close($curl);
+
+        return json_decode($response)->client_secret ?? null;
+    }
 
 
     /**
